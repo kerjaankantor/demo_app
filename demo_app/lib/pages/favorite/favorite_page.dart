@@ -1,37 +1,21 @@
-import 'dart:async';
-
-import 'package:demo_app/pages/login/login_page.dart';
 import 'package:flutter/material.dart';
 
-class SplashPage extends StatefulWidget {
+class FavoritePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return _SplashPageState();
+    return _FavoritePage();
   }
 }
 
-class _SplashPageState extends State<SplashPage> {
-  @override
-  void initState() {
-    super.initState();
-    startSplashScreen();
-  }
-
-  startSplashScreen() async {
-    var duration = const Duration(seconds: 10);
-    return Timer(duration, () {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) {
-          return LoginPage();
-        }),
-      );
-    });
-  }
-
+class _FavoritePage extends State<FavoritePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("Favorite"),
+        automaticallyImplyLeading: false,
+      ),
       body: Center(
         child: ListView(
           shrinkWrap: true,
@@ -45,7 +29,7 @@ class _SplashPageState extends State<SplashPage> {
             SizedBox(height: 40.0),
             Center(
               child: Text(
-                'My Video App',
+                'Favorite...Page',
                 style: TextStyle(
                   fontSize: 40,
                   foreground: Paint()
