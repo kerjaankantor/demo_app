@@ -5,8 +5,6 @@ import 'package:demo_app/pages/setting/setting_page.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatefulWidget {
-  static const String routeName = "home-page";
-
   @override
   State<StatefulWidget> createState() {
     return _HomePageState();
@@ -55,43 +53,6 @@ class _HomePageState extends State<HomePage> {
       // drawer: _buildDrawer(),
       bottomNavigationBar: _bottomNavBar,
       // endDrawer: _buildDrawer(),
-    );
-  }
-
-  Widget _buildDrawer() {
-    return SizedBox(
-      width: MediaQuery.of(context).size.width / 1.2,
-      child: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            UserAccountsDrawerHeader(
-              accountName: Text("Iman Jatnika"),
-              accountEmail: Text("iman.jatnika@gmail.com"),
-              decoration: BoxDecoration(color: Colors.blue),
-            ),
-            _buildListTile(Icons.dashboard, "Dashboard", null),
-            _buildListTile(Icons.search, "Search", null),
-            _buildListTile(Icons.favorite, "Favorite", null),
-            _buildListTile(Icons.settings, "Setting", null),
-            Divider(
-              height: 2.0,
-            ),
-            _buildListTile(null, "About Video App", null),
-            _buildListTile(null, "Logout", null),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildListTile(
-      IconData iconleading, String title, IconData iconTrailing) {
-    return ListTile(
-      leading: Icon(iconleading),
-      title: Text(title),
-      trailing: Icon(iconTrailing),
-      onTap: () {},
     );
   }
 }

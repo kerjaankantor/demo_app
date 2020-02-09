@@ -1,8 +1,7 @@
-import 'package:demo_app/pages/home/home_page.dart';
+import 'package:demo_app/common/system-constant/system-constant.dart';
 import 'package:flutter/material.dart';
 
 class LoginPage extends StatefulWidget {
-  static String routeName = 'login-page';
   @override
   State<StatefulWidget> createState() {
     return new _LoginPage();
@@ -43,12 +42,11 @@ class _LoginPage extends State<LoginPage> {
 
     final tokenLable = Center(
       child: Text(
-        'TOKEN',
+        'My Video App',
         style: TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.bold,
+          fontSize: 18,
           foreground: Paint()
-            ..style = PaintingStyle.fill
+            ..style = PaintingStyle.stroke
             ..strokeWidth = 4
             ..color = Colors.blue[700],
         ),
@@ -61,6 +59,7 @@ class _LoginPage extends State<LoginPage> {
       obscureText: _isHideToken,
       controller: _text,
       decoration: InputDecoration(
+        labelText: "Token",
         errorText: _validate ? 'Token Can\'t Be Empty' : null,
         contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(32.0)),
@@ -93,7 +92,7 @@ class _LoginPage extends State<LoginPage> {
                 _validate = true;
               } else {
                 _validate = false;
-                Navigator.of(context).pushNamed(HomePage.routeName);
+                Navigator.of(context).pushNamed(SystemConstants.HOME_PAGE);
               }
             });
           },
@@ -110,7 +109,7 @@ class _LoginPage extends State<LoginPage> {
           padding: EdgeInsets.only(left: 24.0, right: 24.0),
           children: <Widget>[
             logo,
-            SizedBox(height: 40),
+            SizedBox(height: 10),
             tokenLable,
             SizedBox(height: 20.0),
             token,

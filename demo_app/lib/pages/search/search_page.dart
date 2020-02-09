@@ -1,4 +1,9 @@
+import 'package:demo_app/data/movie/datasources/search_remote_movie_datasource.dart';
+import 'package:demo_app/data/movie/models/movie.dart';
+import 'package:demo_app/network/movie_ws_client.dart';
+import 'package:demo_app/pages/movie_detail/movie_detail_page.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class SearchPage extends StatefulWidget {
   @override
@@ -8,80 +13,142 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPage extends State<SearchPage> {
-  Icon cusIcon = Icon(Icons.search);
-  Widget cusSearchBar = Text('Search Video');
-  List<int> itemList = List();
+  Widget appTitleBar = Text('Search Video');
+  Icon actionIcon = Icon(Icons.search);
+  final TextEditingController _filter = new TextEditingController();
+  String _searchText = "";
+  List<Movie> _movieList;
+  bool isInitOnloadPage = false;
+  _SearchPage() {
+    _filter.addListener(() {
+      if (_filter.text.isEmpty) {
+        setState(() {
+          _searchText = "";
+          _movieList = new List();
+        });
+      } else {
+        setState(() {
+          _searchText = _filter.text;
+        });
+      }
+    });
+  }
 
   @override
   void initState() {
+    isInitOnloadPage = true;
     super.initState();
-    for (var i = 0; i < 5; i++) {
-      itemList.add(i);
+    _getData();
+  }
+
+  @override
+  void dispose() {
+    _filter.dispose();
+    super.dispose();
+  }
+
+  MovieRemoteDatasource get movies =>
+      MovieRemoteDatasourceImpl(client: MovieWsClientImpl(http.Client()));
+
+  void _getData() async {
+    try {
+      final list = await movies.getMovieResult(_searchText);
+      if (mounted) {
+        setState(() {
+          _movieList = list;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _movieList = null;
+        });
+      }
     }
   }
 
+  void _onSearchSubmit() {
+    setState(() {
+      if (this.actionIcon.icon == Icons.search) {
+        this.actionIcon = new Icon(Icons.close);
+        var textField = new TextField(
+          style: new TextStyle(color: Colors.white),
+          controller: _filter,
+          decoration: new InputDecoration(
+              prefix: new Icon(
+                Icons.search,
+                color: Colors.white,
+              ),
+              hintText: "Movie title...",
+              hintStyle: new TextStyle(color: Colors.white)),
+          onSubmitted: (String value) {
+            isInitOnloadPage = false;
+            _searchText = value;
+            _getData();
+          },
+        );
+        this.appTitleBar = textField;
+      } else {
+        this.actionIcon = new Icon(Icons.search);
+        this.appTitleBar = new Text("Search");
+      }
+    });
+  }
+
+  Widget _buildMovieResultList() {
+    if (_movieList == null && !isInitOnloadPage) {
+      return _buildProgressBar();
+    } else {
+      return Center(
+        child: ListView.builder(
+          itemCount: isInitOnloadPage ? 0 : _movieList.length,
+          itemBuilder: _buildItemList,
+        ),
+      );
+    }
+  }
+
+  Widget _buildProgressBar() {
+    return Center(child: CircularProgressIndicator());
+  }
+
+  Widget _buildItemList(BuildContext context, int index) {
+    final movie = _movieList[index];
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        child:  ListTile(
+          key: Key('movie_$index'),
+          title: Text(movie.title),
+          subtitle: Text('year: ${movie.year}'),
+          onTap: () {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MovieDetailPage(movie.id)));
+          },
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text("Search Video"),
+        title: appTitleBar,
         // leading: IconButton(icon: Icon(Icons.menu), onPressed: (){}),
         automaticallyImplyLeading: false,
         actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              setState(() {
-                if (this.cusIcon.icon == Icons.search) {
-                  this.cusIcon = Icon(Icons.cancel);
-                  this.cusSearchBar = TextField(
-                      // textInputAction: TextInputAction.go,
-                      // style: TextStyle(
-                      //   color: Colors.white,
-                      //   fontSize: 16.0
-                      // ),
-                      );
-                }
-              });
-            },
-            icon: cusSearchBar,
-          )
+          new IconButton(
+              icon: actionIcon,
+              onPressed: () {
+                _onSearchSubmit();
+              })
         ],
       ),
-      body: Center(
-        child: GridView.builder(
-          itemCount: itemList.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 1, mainAxisSpacing: 30.0),
-          itemBuilder: (BuildContext context, int index) {
-            return Card(
-              child: Container(
-                padding: EdgeInsets.all(10),
-                child: Center(
-                  child: Column(
-                    children: <Widget>[
-                      Expanded(
-                        child: Image.asset(
-                          "images/placeholder.png",
-                          // width: 200.0,
-                          // height: 100.0,
-                        ),
-                      ),
-                      Text('Title of Movie',
-                          style: TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold)),
-                      Text(
-                          'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae',
-                          style: TextStyle(fontSize: 12)),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
+      body: _buildMovieResultList(),
     );
   }
 }

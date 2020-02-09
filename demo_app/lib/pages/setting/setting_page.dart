@@ -1,3 +1,4 @@
+import 'package:demo_app/common/system-constant/system-constant.dart';
 import 'package:flutter/material.dart';
 
 class SettingPage extends StatefulWidget {
@@ -8,45 +9,51 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPage extends State<SettingPage> {
+  bool isFavorite = false;
+
+  void _onSwitchChanged(bool value) {
+    isFavorite = false;
+  }
+
   @override
   Widget build(BuildContext context) {
+    Widget viewOptionSection = new Row(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: <Widget>[
+        Text("View"),
+        Switch(value: isFavorite, onChanged: _onSwitchChanged),
+      ],
+    );
+
+    Widget logoutButton = Padding(
+      padding: EdgeInsets.symmetric(vertical: 16.0),
+      child: Material(
+        borderRadius: BorderRadius.circular(20.0),
+        shadowColor: Colors.lightBlueAccent,
+        elevation: 5.0,
+        color: Colors.blue[700],
+        child: MaterialButton(
+          minWidth: 10.0,
+          height: 42.0,
+          onPressed: () {
+            setState(() {
+              Navigator.of(context).pushNamed(SystemConstants.LOGIN_PAGE);
+            });
+          },
+          child: Text('Log out', style: TextStyle(color: Colors.white)),
+        ),
+      ),
+    );
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         title: Text("Setting"),
         automaticallyImplyLeading: false,
       ),
-      body: Center(
-        child: ListView(
-          shrinkWrap: true,
+      body: ListView(
+         shrinkWrap: true,
           padding: EdgeInsets.only(left: 24.0, right: 24.0),
-          children: <Widget>[
-            Image.asset(
-              "images/logo.png",
-              width: 200.0,
-              height: 100.0,
-            ),
-            SizedBox(height: 40.0),
-            Center(
-              child: Text(
-                'Setting...Page',
-                style: TextStyle(
-                  fontSize: 40,
-                  foreground: Paint()
-                    ..style = PaintingStyle.stroke
-                    ..strokeWidth = 6
-                    ..color = Colors.blue[700],
-                ),
-              ),
-            ),
-            SizedBox(height: 20.0),
-            Image.asset(
-              "images/loading.gif",
-              width: 200.0,
-              height: 100.0,
-            ),
-          ],
-        ),
+        children: <Widget>[viewOptionSection, logoutButton],
       ),
     );
   }
