@@ -26,8 +26,7 @@ class MovieRemoteDatasourceImpl implements MovieRemoteDatasource {
 
   @override
   Future<List<Movie>> getMovie() async {
-    final response =
-        await client.get("http://www.omdbapi.com/?apikey=68afa52b&s=life");
+    final response = await client.get("http://www.omdbapi.com/?apikey=68afa52b&s=life");
     String json = response.body;
     List<Movie> movies = [];
     Map<String, dynamic> decodedJson = jsonDecode(json);
