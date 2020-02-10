@@ -84,8 +84,17 @@ class _DashboardPage extends State<DashboardPage> {
         // backgroundColor: Colors.white,
         backgroundColor: Colors.grey[300],
         appBar: AppBar(
-          title: Text("Dashboard"),
+          leading: new Icon(
+            Icons.dashboard,
+            color: Colors.blue[700],
+          ),
+          title: Text("Dashboard",
+              style: TextStyle(
+                color: Colors.blue[700],
+              )),
           automaticallyImplyLeading: false,
+          backgroundColor: Colors.white,
+          actions: <Widget>[],
         ),
         body: Container(
           child: _buildMovieList(context),

@@ -1,4 +1,8 @@
+import 'package:demo_app/data/movie/datasources/search_movie_datasource_shared_preferencelocal_impl.dart';
+import 'package:demo_app/data/movie/models/movie_detail_local.dart';
+import 'package:demo_app/data/movie/repositories/movie_repositories.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class FavoritePage extends StatefulWidget {
   @override
@@ -8,146 +12,99 @@ class FavoritePage extends StatefulWidget {
 }
 
 class _FavoritePage extends State<FavoritePage> {
-  List<Priority> _priority = Priority.getPriorities();
-  List<DropdownMenuItem<Priority>> _dropDownMenuItems;
-  Priority _selectedPriority;
-  bool isView = false;
-  DateTime _dateTime;
+  List<MovieDetailLocal> movieDetailLocalList;
+
+  Future<MovieRepositoryImpl> get movieDetailLocalRepository async =>
+      MovieRepositoryImpl(
+          movieDetailLocalDatasource: MovieLocalDatasourceSharedPrefetenceImpl(
+              sharedPreferences: await SharedPreferences.getInstance()));
 
   @override
   void initState() {
-    _dropDownMenuItems = _buildDropdownPriorityItems(_priority);
-    _selectedPriority = _dropDownMenuItems[0].value;
-    print(_selectedPriority);
     super.initState();
+    _getData();
   }
 
-  List<DropdownMenuItem<Priority>> _buildDropdownPriorityItems(
-      List priorities) {
-    List<DropdownMenuItem<Priority>> items = List();
-    for (Priority priority in priorities) {
-      items.add(DropdownMenuItem(
-        value: priority,
-        child: Text(priority.categoryPriority),
-      ));
+  void _getData() async {
+    try {
+      final repository = await movieDetailLocalRepository;
+      if (mounted) {
+        List list = repository.getMovieDetailLocal();
+        setState(() {
+          movieDetailLocalList = list;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          movieDetailLocalList = null;
+        });
+      }
     }
-    return items;
   }
 
-  void _onSwitchChanged(bool value){
-    isView = false;
+  Widget _buildMovieResultList() {
+    return Center(
+      child: ListView.builder(
+        itemCount: movieDetailLocalList== null?0 :movieDetailLocalList.length,
+        itemBuilder: _buildItemList,
+      ),
+    );
+  }
+
+  Widget _buildProgressBar() {
+    return Center(child: CircularProgressIndicator());
+  }
+
+  Widget _buildItemList(BuildContext context, int index) {
+    final movie = movieDetailLocalList[index];
+    return new Card(
+        child: new Column(
+      children: <Widget>[
+        new ListTile(
+          leading: new Image.network(
+            movie.poster,
+            fit: BoxFit.cover,
+            width: 100.0,
+          ),
+
+          title: new Text(
+            movie.title,
+            style: new TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+          ),
+          subtitle: new Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Text(movie.year,
+                    style: new TextStyle(
+                        fontSize: 13.0, fontWeight: FontWeight.normal))
+              ]),
+          //trailing: ,
+          onTap: () {},
+        )
+      ],
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
-    Widget posterSection = Container(
-      child: Image.asset("images/placeholder.png"),
-    );
-
-    Widget titleSection = Container(
-      padding: EdgeInsets.only(top: 16),
-      child: Text(
-        'Unknown Movie',
-        textAlign: TextAlign.center,
-        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-      ),
-    );
-
-    Widget description = Container(
-      padding: EdgeInsets.all(16),
-      child: Text(
-        'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean'
-        'penatibus et magnis dis parturient montes, nascetur ridiculus mus'
-        'Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu',
-        textAlign: TextAlign.justify,
-      ),
-    );
-
-    Widget ratingSection = Row(
-      children: <Widget>[
-        Icon(Icons.star, color: Colors.yellow),
-        Icon(Icons.star, color: Colors.yellow),
-        Icon(Icons.star, color: Colors.yellow),
-        Icon(Icons.star, color: Colors.yellow),
-        Icon(Icons.star, color: Colors.yellow),
-        Icon(Icons.star, color: Colors.yellow),
-        Icon(Icons.star, color: Colors.yellow),
-        Icon(Icons.star_half, color: Colors.yellow),
-        Icon(Icons.star_border, color: Colors.black),
-        Icon(Icons.star_border, color: Colors.black),
-        Text('7.8'),
-      ],
-    );
-
-    Widget viewSection = new Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[ratingSection, Text('1000 views')],
-    );
-
-    Widget prioritySection = new Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[
-        Text('Priority'),
-        // SizedBox(
-        //   height: 20.0,
-        // ),
-        DropdownButton(
-          value: _selectedPriority,
-          items: _dropDownMenuItems,
-          onChanged: (Priority value) {},
-        ),
-      ],
-    );
-
-    Widget viewOptionSection = new Row(
-       mainAxisAlignment: MainAxisAlignment.spaceAround,
-       children: <Widget>[
-         Text("View"),
-         Switch(value: isView, onChanged: _onSwitchChanged),
-       ],
-
-    );
-
-    Widget updateDateSection = new Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: <Widget>[
-        Text("Update Date"),
-        Text(_dateTime == null ? 'Pick date please' : _dateTime.toString()),
-        RaisedButton(onPressed: (){
-          showDatePicker(
-            context: context, 
-            initialDate: DateTime.now(), 
-            firstDate: DateTime(2020),
-             lastDate: DateTime(2022)).then((date){
-               setState(() {
-                 _dateTime = date;
-               });
-             });
-        })
-
-      ],
-    );
-
+    _getData();
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        title: Text("Favorite"),
+        leading: new Icon(
+          Icons.favorite,
+          color: Colors.blue[700],
+        ),
+        title: Text("Favorite",
+            style: TextStyle(
+              color: Colors.blue[700],
+            )),
+        backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
       ),
-      body: ListView(
-        children: <Widget>[
-          posterSection,
-          titleSection,
-          description,
-          Container(
-            padding: EdgeInsets.only(bottom: 24),
-            child: viewSection,
-          ),
-          prioritySection,
-          viewOptionSection,
-          updateDateSection
-        ],
-      ),
+      body: _buildMovieResultList(),
     );
   }
 }

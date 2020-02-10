@@ -45,9 +45,11 @@ class _SettingPage extends State<SettingPage> {
       ),
     );
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
-        title: Text("Setting"),
+        leading: new Icon(Icons.settings,color:Colors.blue[700],),
+        title: Text("Setting", style: TextStyle(color: Colors.blue[700], )),
+         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
       ),
       body: ListView(

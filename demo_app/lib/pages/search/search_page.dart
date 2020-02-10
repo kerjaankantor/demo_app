@@ -13,8 +13,14 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPage extends State<SearchPage> {
-  Widget appTitleBar = Text('Search Video');
-  Icon actionIcon = Icon(Icons.search);
+  Widget appTitleBar = Text('Search Video',
+      style: TextStyle(
+        color: Colors.blue[700],
+      ));
+  Icon actionIcon = Icon(
+    Icons.search,
+    color: Colors.blue[700],
+  );
   final TextEditingController _filter = new TextEditingController();
   String _searchText = "";
   List<Movie> _movieList;
@@ -70,17 +76,17 @@ class _SearchPage extends State<SearchPage> {
   void _onSearchSubmit() {
     setState(() {
       if (this.actionIcon.icon == Icons.search) {
-        this.actionIcon = new Icon(Icons.close);
+        this.actionIcon = new Icon(Icons.close, color: Colors.blue[700]);
         var textField = new TextField(
-          style: new TextStyle(color: Colors.white),
+          style: new TextStyle(color: Colors.blue[700]),
           controller: _filter,
           decoration: new InputDecoration(
               prefix: new Icon(
                 Icons.search,
-                color: Colors.white,
+                color: Colors.blue[700],
               ),
               hintText: "Movie title...",
-              hintStyle: new TextStyle(color: Colors.white)),
+              hintStyle: new TextStyle(color: Colors.blue[700])),
           onSubmitted: (String value) {
             isInitOnloadPage = false;
             _searchText = value;
@@ -89,8 +95,11 @@ class _SearchPage extends State<SearchPage> {
         );
         this.appTitleBar = textField;
       } else {
-        this.actionIcon = new Icon(Icons.search);
-        this.appTitleBar = new Text("Search");
+        this.actionIcon = new Icon(Icons.search, color: Colors.blue[700]);
+        this.appTitleBar = new Text("Search",
+            style: TextStyle(
+              color: Colors.blue[700],
+            ));
       }
     });
   }
@@ -114,32 +123,49 @@ class _SearchPage extends State<SearchPage> {
 
   Widget _buildItemList(BuildContext context, int index) {
     final movie = _movieList[index];
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Card(
-        child:  ListTile(
-          key: Key('movie_$index'),
-          title: Text(movie.title),
-          subtitle: Text('year: ${movie.year}'),
+    return new Card(
+        child: new Column(
+      children: <Widget>[
+        new ListTile(
+          leading: new Image.network(
+            movie.poster,
+            fit: BoxFit.cover,
+            width: 100.0,
+          ),
+
+          title: new Text(
+            movie.title,
+            style: new TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
+          ),
+          subtitle: new Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                new Text(movie.year,
+                    style: new TextStyle(
+                        fontSize: 13.0, fontWeight: FontWeight.normal))
+              ]),
+          //trailing: ,
           onTap: () {
             Navigator.push(
                 context,
                 MaterialPageRoute(
                     builder: (context) => MovieDetailPage(movie.id)));
           },
-        ),
-      ),
-    );
+        )
+      ],
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.grey[300],
       appBar: AppBar(
         title: appTitleBar,
         // leading: IconButton(icon: Icon(Icons.menu), onPressed: (){}),
         automaticallyImplyLeading: false,
+        backgroundColor: Colors.white,
         actions: <Widget>[
           new IconButton(
               icon: actionIcon,
