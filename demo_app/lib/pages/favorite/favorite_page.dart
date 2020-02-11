@@ -1,6 +1,7 @@
 import 'package:demo_app/data/movie/datasources/search_movie_datasource_shared_preferencelocal_impl.dart';
 import 'package:demo_app/data/movie/models/movie_detail_local.dart';
 import 'package:demo_app/data/movie/repositories/movie_repositories.dart';
+import 'package:demo_app/pages/favorite/movie_detail_local.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,9 +53,9 @@ class _FavoritePage extends State<FavoritePage> {
     );
   }
 
-  Widget _buildProgressBar() {
-    return Center(child: CircularProgressIndicator());
-  }
+  // Widget _buildProgressBar() {
+  //   return Center(child: CircularProgressIndicator());
+  // }
 
   Widget _buildItemList(BuildContext context, int index) {
     final movie = movieDetailLocalList[index];
@@ -81,7 +82,12 @@ class _FavoritePage extends State<FavoritePage> {
                         fontSize: 13.0, fontWeight: FontWeight.normal))
               ]),
           //trailing: ,
-          onTap: () {},
+          onTap: () {
+             Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => MovieDetailLocalPage(movie.imdbID)));
+          },
         )
       ],
     ));

@@ -1,6 +1,5 @@
 import 'package:demo_app/data/movie/datasources/search_movie_datasource_shared_preferencelocal_impl.dart';
 import 'package:demo_app/data/movie/datasources/search_remote_movie_datasource.dart';
-import 'package:demo_app/data/movie/models/movie_detail.dart';
 import 'package:demo_app/data/movie/models/movie_detail_local.dart';
 import 'package:demo_app/data/movie/repositories/movie_repositories.dart';
 import 'package:demo_app/network/movie_ws_client.dart';
@@ -9,20 +8,20 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class MovieDetailPage extends StatefulWidget {
+class MovieDetailLocalPage extends StatefulWidget {
   final String id;
-  MovieDetailPage(this.id);
+  MovieDetailLocalPage(this.id);
   @override
   State<StatefulWidget> createState() {
-    return _MovieDetailPage(this.id);
+    return _MovieDetailLocalPage(this.id);
   }
 }
 
-class _MovieDetailPage extends State<MovieDetailPage> {
+class _MovieDetailLocalPage extends State<MovieDetailLocalPage> {
   final String id;
   String idVal;
-  _MovieDetailPage(this.id);
-  MovieDetail movieDetail;
+  _MovieDetailLocalPage(this.id);
+  MovieDetailLocal movieDetail;
   List<Priority> _priority = Priority.getPriorities();
   List<DropdownMenuItem<Priority>> _dropDownMenuItems;
   Priority _selectedPriority;
@@ -35,12 +34,12 @@ class _MovieDetailPage extends State<MovieDetailPage> {
 
   @override
   void initState() {
+    super.initState();
     _dropDownMenuItems = _buildDropdownPriorityItems(_priority);
     _selectedPriority = _dropDownMenuItems[0].value;
     setState(() {
       this.idVal = id;
     });
-    super.initState();
     _getData();
   }
 
@@ -68,8 +67,9 @@ class _MovieDetailPage extends State<MovieDetailPage> {
 
   _getData() async {
     try {
-      final result = await movies.getMovieDetail(id);
+      final repository = await movieDetailLocalRepository;
       if (mounted) {
+        MovieDetailLocal result = await repository.getDetail(idVal);
         setState(() {
           movieDetail = result;
         });
@@ -592,9 +592,7 @@ class _MovieDetailPage extends State<MovieDetailPage> {
         value: _selectedPriority,
         items: _dropDownMenuItems,
         onChanged: (Priority value) {
-          setState(() {
-              _selectedPriority=value;
-          });
+          _selectedPriority = value;
         },
       ),
     );
@@ -650,8 +648,8 @@ class _MovieDetailPage extends State<MovieDetailPage> {
             minWidth: 10.0,
             height: 42.0,
             onPressed: () {
-              // dropdown Still hardcode
-              _onSaveLocal(movieDetail, 1, isView, DateTime.now());
+              // dropdown still hardcode
+              _onSaveLocal(movieDetail, 1,isView, DateTime.now());
               // Navigator.of(context).pushNamed(SystemConstants.FAVORITE_PAGE);
               Navigator.of(context).pop();
               _showDialog(context);
@@ -682,7 +680,7 @@ class _MovieDetailPage extends State<MovieDetailPage> {
         });
   }
 
-  _onSaveLocal(MovieDetail movieDetail, int priority, bool isView,
+  _onSaveLocal(MovieDetailLocal movieDetail, int priority, bool isView,
       DateTime createdDate) async {
     final repository = await movieDetailLocalRepository;
     MovieDetailLocal detailLocal = MovieDetailLocal(
@@ -717,6 +715,7 @@ class _MovieDetailPage extends State<MovieDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    _getData();
     return Scaffold(
       backgroundColor: Colors.grey[300],
       appBar: AppBar(

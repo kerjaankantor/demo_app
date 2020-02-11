@@ -69,7 +69,7 @@ class MovieDetail {
     final metascore = json['Metascore'] as String;
     final imdbRating = json['ImdbRating'] as String;
     final imdbVotes = json['ImdbVotes'] as String;
-    final imdbID = json['ImdbID'] as String;
+    final imdbID = json['imdbID'] as String;
     final type = json['Type'] as String;
     final dVD = json['DVD'] as String;
     final boxOffice = json['BoxOffice'] as String;

@@ -25,7 +25,7 @@ class MovieLocalDatasourceSharedPrefetenceImpl
   @override
   List<MovieDetailLocal> getMovieDetailLocal() {
     Set<String> keySet = sharedPreferences.getKeys();
-    List<MovieDetailLocal> movieDetailLocalList =[];
+    List<MovieDetailLocal> movieDetailLocalList = [];
     if (keySet.isNotEmpty) {
       for (var key in keySet) {
         if (key != "HIDDEN_FAVORITE") {
@@ -36,6 +36,18 @@ class MovieLocalDatasourceSharedPrefetenceImpl
         }
       }
       return movieDetailLocalList;
+    } else {
+      return null;
+    }
+  }
+
+  @override
+  Future<MovieDetailLocal> getDetail(String id) async {
+    String result = sharedPreferences.getString('movie_cache_$id');
+    Map<String, dynamic> decodedJson = jsonDecode(result);
+    MovieDetailLocal detail = MovieDetailLocal.fromNeoJson(decodedJson);
+    if (detail != null) {
+      return detail;
     } else {
       return null;
     }
