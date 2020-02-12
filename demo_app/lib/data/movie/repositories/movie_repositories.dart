@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:demo_app/data/movie/datasources/search_local_movie_datasource.dart';
 import 'package:demo_app/data/movie/models/movie_detail_local.dart';
+import 'package:demo_app/data/movie/models/setting.dart';
 import 'package:flutter/material.dart';
 
 abstract class MovieRepository {
@@ -9,6 +10,9 @@ abstract class MovieRepository {
       String date, MovieDetailLocal movieDetailLocal);
   List<MovieDetailLocal> getMovieDetailLocal();
   Future<MovieDetailLocal> getDetail(String id);
+  Future<void> setHiddenRec(String id, String hiddenVal);
+  Future<SettingFav> getHiddenFav(String id);
+  Future<void> deleteMovieDetailLocal(String id) ;
 }
 
 class MovieRepositoryImpl implements MovieRepository {
@@ -24,7 +28,7 @@ class MovieRepositoryImpl implements MovieRepository {
   @override
   Future<void> setMovieDetailByDate(
       String imdbID, MovieDetailLocal movieDetailLocal) {
-    movieDetailLocalDatasource.setMovieDetailByDate(imdbID, movieDetailLocal);
+    movieDetailLocalDatasource.setMovieDetailLocal(imdbID, movieDetailLocal);
     return null;
   }
 
@@ -40,5 +44,31 @@ class MovieRepositoryImpl implements MovieRepository {
     } else {
       return null;
     }
+  }
+
+  @override
+  Future<SettingFav> getHiddenFav(String id) async {
+    final jsonString = await movieDetailLocalDatasource.getHiddenFav(id);
+    if (jsonString != null) {
+      SettingFav settingFav;
+      String json = jsonEncode(jsonString);
+      Map<String, dynamic> decodedJson = jsonDecode(json);
+      settingFav = SettingFav.fromNeoJson(decodedJson);
+      return settingFav;
+    } else {
+      return null;
+    }
+  }
+
+  @override
+  Future<void> setHiddenRec(String id, String hiddenVal) {
+    movieDetailLocalDatasource.setHiddenFav(id, hiddenVal);
+    return null;
+  }
+
+  @override
+  Future<void> deleteMovieDetailLocal(String id) {
+    movieDetailLocalDatasource.deleteMovieDetailLocal(id);
+    return null;
   }
 }

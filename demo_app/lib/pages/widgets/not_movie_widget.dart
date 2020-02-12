@@ -85,7 +85,7 @@ class NotMovieWidget extends StatelessWidget {
           MaterialPageRoute(
               builder: (context) => MovieDetailPage(id)));
       },
-      child: Card(
+      child: Card( 
         child: Container(
           child: ClipRRect(
             borderRadius: BorderRadius.only(

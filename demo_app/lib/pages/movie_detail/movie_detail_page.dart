@@ -45,7 +45,7 @@ class _MovieDetailPage extends State<MovieDetailPage> {
   }
 
   void _onSwitchChanged(bool value) {
-    isView = false;
+    isView = value;
   }
 
   List<DropdownMenuItem<Priority>> _buildDropdownPriorityItems(
@@ -651,7 +651,7 @@ class _MovieDetailPage extends State<MovieDetailPage> {
             height: 42.0,
             onPressed: () {
               // dropdown Still hardcode
-              _onSaveLocal(movieDetail, 1, isView, DateTime.now());
+              _onSaveLocal(movieDetail, _selectedPriority.id, isView, DateTime.now());
               // Navigator.of(context).pushNamed(SystemConstants.FAVORITE_PAGE);
               Navigator.of(context).pop();
               _showDialog(context);
@@ -670,7 +670,7 @@ class _MovieDetailPage extends State<MovieDetailPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text("NOTIFCATION"),
-            content: Text("Move has been save"),
+            content: Text("Movie has been saved"),
             actions: <Widget>[
               new FlatButton(
                   onPressed: () {
@@ -709,9 +709,9 @@ class _MovieDetailPage extends State<MovieDetailPage> {
         boxOffice: movieDetail.boxOffice,
         production: movieDetail.production,
         website: movieDetail.writer,
-        isView: isView,
-        priority: priority,
-        createdDate: createdDate);
+        isView: isView.toString(),
+        priority: priority.toString(),
+        createdDate: createdDate.toString());
     repository.setMovieDetailByDate(movieDetail.imdbID, detailLocal);
   }
 

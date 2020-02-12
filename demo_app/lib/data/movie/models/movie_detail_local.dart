@@ -26,9 +26,9 @@ class MovieDetailLocal {
   final String boxOffice;
   final String production;
   final String website;
-  final bool isView;
-  final int priority;
-  final DateTime createdDate;
+  final String isView;
+  final String priority;
+  final String createdDate;
 
   MovieDetailLocal(
       {@required this.title,
@@ -83,9 +83,9 @@ class MovieDetailLocal {
     final boxOffice = json['boxOffice'] as String;
     final production = json['production'] as String;
     final website = json['website'] as String;
-    final isView = json['isView'] as bool;
-    final priority = json['priority'] as int;
-    final createdDate = json['createdDate'] as DateTime;
+    final isView = json['isView'] as String;
+    final priority = json['priority'] as String;
+    final createdDate = json['createdDate'] as String;
 
     return MovieDetailLocal(
         title: title,
@@ -171,6 +171,9 @@ class MovieDetailLocal {
       'boxOffice': boxOffice,
       'production': production,
       'website': website,
+      'isView':isView,
+      'priority':priority,
+      'createdDate': createdDate
     };
   }
 

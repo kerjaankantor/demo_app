@@ -44,7 +44,7 @@ class _MovieDetailLocalPage extends State<MovieDetailLocalPage> {
   }
 
   void _onSwitchChanged(bool value) {
-    isView = false;
+    isView = value;
   }
 
   List<DropdownMenuItem<Priority>> _buildDropdownPriorityItems(
@@ -72,6 +72,7 @@ class _MovieDetailLocalPage extends State<MovieDetailLocalPage> {
         MovieDetailLocal result = await repository.getDetail(idVal);
         setState(() {
           movieDetail = result;
+          // _selectedPriority = Priority(int.parse(movieDetail.priority), _categoryValue(int.parse(movieDetail.priority)));
         });
       }
     } catch (e) {
@@ -191,9 +192,15 @@ class _MovieDetailLocalPage extends State<MovieDetailLocalPage> {
                 SizedBox(height: 4.0),
                 _buildViewInfoData(),
                 SizedBox(height: 4.0),
+                _buildCreatedDateHeader(),
+                SizedBox(height: 4.0),
+                _buildCreatedDateInfoData(),
+                SizedBox(height: 4.0),
+                SizedBox(height: 4.0),
                 _buildSaveHeader(),
                 SizedBox(height: 4.0),
-                _buildSaveInfoData(context),
+                // _buildSaveInfoData(context),
+                _buildButton(context),
                 SizedBox(height: 24.0),
               ],
             ),
@@ -589,7 +596,7 @@ class _MovieDetailLocalPage extends State<MovieDetailLocalPage> {
         left: 12.0,
       ),
       child: DropdownButton(
-        value: _selectedPriority,
+        value: _dropDownMenuItems[int.parse(movieDetail.priority) - 1].value,
         items: _dropDownMenuItems,
         onChanged: (Priority value) {
           _selectedPriority = value;
@@ -617,7 +624,9 @@ class _MovieDetailLocalPage extends State<MovieDetailLocalPage> {
       padding: const EdgeInsets.only(
         left: 12.0,
       ),
-      child: Switch(value: isView, onChanged: _onSwitchChanged),
+      child: Switch(
+          value: movieDetail.isView == "true" ? true : false,
+          onChanged: _onSwitchChanged),
     );
   }
 
@@ -649,16 +658,83 @@ class _MovieDetailLocalPage extends State<MovieDetailLocalPage> {
             height: 42.0,
             onPressed: () {
               // dropdown still hardcode
-              _onSaveLocal(movieDetail, 1,isView, DateTime.now());
+              _onSaveLocal(
+                  movieDetail, _selectedPriority.id, isView, DateTime.now());
               // Navigator.of(context).pushNamed(SystemConstants.FAVORITE_PAGE);
               Navigator.of(context).pop();
               _showDialog(context);
             },
-            child:
-                Text('Save As Favorite', style: TextStyle(color: Colors.white)),
+            child: Text('Update', style: TextStyle(color: Colors.white)),
           ),
         ),
       ),
+    );
+  }
+
+  _buildCreatedDateHeader() {
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 12.0,
+      ),
+      child: Text(
+        "Last Update",
+        style: TextStyle(
+          color: Colors.grey[800],
+        ),
+      ),
+    );
+  }
+
+  _buildCreatedDateInfoData() {
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: 12.0,
+      ),
+      child: Text(
+        movieDetail.createdDate == null ? "-" : movieDetail.createdDate,
+        style: TextStyle(
+          color: Colors.grey[600],
+        ),
+      ),
+    );
+  }
+
+  _buildDeleteInfoData(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.symmetric(vertical: 16.0),
+        child: Material(
+          borderRadius: BorderRadius.circular(20.0),
+          shadowColor: Colors.lightBlueAccent,
+          elevation: 5.0,
+          color: Colors.blue[700],
+          child: MaterialButton(
+            minWidth: 10.0,
+            height: 42.0,
+            onPressed: () {
+              _onDeleteLocal(movieDetail);
+              // dropdown still hardcode
+              // _onSaveLocal(
+              //     movieDetail, _selectedPriority.id, isView, DateTime.now());
+              // Navigator.of(context).pushNamed(SystemConstants.FAVORITE_PAGE);
+              Navigator.of(context).pop();
+              _showDialog(context);
+            },
+            child: Text('delete', style: TextStyle(color: Colors.white)),
+          ),
+        ),
+      ),
+    );
+  }
+
+  _buildButton(BuildContext context) {
+    return new Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        _buildSaveInfoData(context),
+        SizedBox(width: 10,),
+        _buildDeleteInfoData(context),
+      ],
     );
   }
 
@@ -668,7 +744,7 @@ class _MovieDetailLocalPage extends State<MovieDetailLocalPage> {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text("NOTIFCATION"),
-            content: Text("Move has been save"),
+            content: Text("Movie has been saved"),
             actions: <Widget>[
               new FlatButton(
                   onPressed: () {
@@ -680,6 +756,10 @@ class _MovieDetailLocalPage extends State<MovieDetailLocalPage> {
         });
   }
 
+_onDeleteLocal(MovieDetailLocal movieDetail) async{
+  final repository = await movieDetailLocalRepository;
+  repository.deleteMovieDetailLocal(movieDetail.imdbID);
+} 
   _onSaveLocal(MovieDetailLocal movieDetail, int priority, bool isView,
       DateTime createdDate) async {
     final repository = await movieDetailLocalRepository;
@@ -707,9 +787,9 @@ class _MovieDetailLocalPage extends State<MovieDetailLocalPage> {
         boxOffice: movieDetail.boxOffice,
         production: movieDetail.production,
         website: movieDetail.writer,
-        isView: isView,
-        priority: priority,
-        createdDate: createdDate);
+        isView: isView.toString(),
+        priority: priority.toString(),
+        createdDate: createdDate.toString());
     repository.setMovieDetailByDate(movieDetail.imdbID, detailLocal);
   }
 

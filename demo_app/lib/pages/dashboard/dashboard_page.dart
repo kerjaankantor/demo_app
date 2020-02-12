@@ -1,9 +1,13 @@
+import 'package:demo_app/data/movie/datasources/search_movie_datasource_shared_preferencelocal_impl.dart';
 import 'package:demo_app/data/movie/datasources/search_remote_movie_datasource.dart';
 import 'package:demo_app/data/movie/models/movie.dart';
+import 'package:demo_app/data/movie/models/setting.dart';
+import 'package:demo_app/data/movie/repositories/movie_repositories.dart';
 import 'package:demo_app/network/movie_ws_client.dart';
 import 'package:demo_app/pages/widgets/not_movie_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardPage extends StatefulWidget {
   @override
@@ -15,6 +19,12 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPage extends State<DashboardPage> {
   List<Movie> _movieList;
   List<int> itemList = List();
+  bool _isShowProgressBar = false;
+
+  Future<MovieRepository> get movieDetailLocalRepository async =>
+      MovieRepositoryImpl(
+          movieDetailLocalDatasource: MovieLocalDatasourceSharedPrefetenceImpl(
+              sharedPreferences: await SharedPreferences.getInstance()));
 
   @override
   void initState() {
@@ -27,23 +37,35 @@ class _DashboardPage extends State<DashboardPage> {
 
   void _getData() async {
     try {
-      final list = await movies.getMovie();
+      final repository = await movieDetailLocalRepository;
       if (mounted) {
-        setState(() {
-          _movieList = list;
-        });
+        SettingFav result = await repository.getHiddenFav('setting_key');
+        if (result.hiddenVal != '_hidden') {
+          try {
+            final list = await movies.getMovie();
+            if (mounted) {
+              setState(() {
+                _movieList = list;
+              });
+            }
+          } catch (e) {
+            if (mounted) {
+              setState(() {
+                _movieList = null;
+                _isShowProgressBar = true;
+              });
+            }
+          }
+        }
       }
     } catch (e) {
-      if (mounted) {
-        setState(() {
-          _movieList = null;
-        });
-      }
+      print(e);
     }
+    
   }
 
   Widget _buildMovieList(BuildContext context) {
-    if (_movieList == null) {
+    if (_movieList == null && _isShowProgressBar) {
       return _buildProgressBar();
     } else {
       return Center(child: _buildItemList(context));
@@ -65,7 +87,7 @@ class _DashboardPage extends State<DashboardPage> {
               childAspectRatio: 0.5,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16),
-          itemCount: _movieList.length,
+          itemCount: _movieList== null?0 :_movieList.length,
           itemBuilder: (context, index) {
             return NotMovieWidget(
                 notMovieTitle: _movieList[index].title,
