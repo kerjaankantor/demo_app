@@ -73,7 +73,8 @@ class _SettingPage extends State<SettingPage> {
     Widget viewOptionSection = new Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: <Widget>[
-        Text("Show  Recommended", style: TextStyle(
+        Text("Show  Recommended",
+            style: TextStyle(
               color: Colors.blue[700],
               fontSize: 18.0,
             )),
@@ -114,10 +115,13 @@ class _SettingPage extends State<SettingPage> {
         backgroundColor: Colors.white,
         automaticallyImplyLeading: false,
       ),
-      body: ListView(
-        shrinkWrap: true,
-        padding: EdgeInsets.only(left: 24.0, right: 24.0, top:24.0),
-        children: <Widget>[viewOptionSection, logoutButton],
+      body: Container(
+        color: Colors.white,
+        child: ListView(
+          shrinkWrap: true,
+          padding: EdgeInsets.only(left: 24.0, right: 24.0, top: 24.0),
+          children: <Widget>[viewOptionSection, logoutButton],
+        ),
       ),
     );
   }

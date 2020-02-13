@@ -61,7 +61,6 @@ class _DashboardPage extends State<DashboardPage> {
     } catch (e) {
       print(e);
     }
-    
   }
 
   Widget _buildMovieList(BuildContext context) {
@@ -76,6 +75,76 @@ class _DashboardPage extends State<DashboardPage> {
     return Center(child: CircularProgressIndicator());
   }
 
+  _buildDashBoardPage(BuildContext context) {
+    return SafeArea(
+        child: Column(children: <Widget>[
+      Flexible(
+          flex: 1,
+          child: Container(
+              color: Colors.white,
+              child: Column(children: <Widget>[
+                bannerArea(),
+                Padding(
+                  padding: const EdgeInsets.only(top: 15.0, left: 5, right: 5, bottom: 10),
+                  child: Text(
+                    'Movie Recommendation',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Text(
+                  'Currently the application just store favorite movie, with all token has same preference key, and movie recommendation still hit imdb API for searching with hard code parameter value',
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                ),
+                Container(
+                  child: Expanded(
+                   child: _buildMovieList(context),
+                  ),
+                ),
+              ]))),
+    ]));
+  }
+
+  bannerArea() {
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 50,
+          height: 50,
+          margin: EdgeInsets.only(right: 20, top: 20, left: 20),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(25),
+            child: Image.asset("images/logo.png",
+              fit: BoxFit.cover, 
+            ),
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              'My Video App',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,  color: Colors.blue[700],),
+            ),
+            Text('oh my this my first baby App flutter, YAY!!!',
+            style: new TextStyle( color: Colors.blue[700]))
+          ],
+        ),
+        Spacer(
+          flex: 2,
+        ),
+      ],
+    );
+  }
+
   Widget _buildItemList(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.grey[300],
@@ -87,7 +156,7 @@ class _DashboardPage extends State<DashboardPage> {
               childAspectRatio: 0.5,
               crossAxisSpacing: 16,
               mainAxisSpacing: 16),
-          itemCount: _movieList== null?0 :_movieList.length,
+          itemCount: _movieList == null ? 0 : _movieList.length,
           itemBuilder: (context, index) {
             return NotMovieWidget(
                 notMovieTitle: _movieList[index].title,
@@ -119,7 +188,8 @@ class _DashboardPage extends State<DashboardPage> {
           actions: <Widget>[],
         ),
         body: Container(
-          child: _buildMovieList(context),
+          // child: _buildMovieList(context),
+          child: _buildDashBoardPage(context),
         ));
   }
 }

@@ -24,7 +24,12 @@ class _SearchPage extends State<SearchPage> {
   final TextEditingController _filter = new TextEditingController();
   String _searchText = "";
   List<Movie> _movieList;
+  List<Movie> _movieScrollList;
   bool isInitOnloadPage = false;
+
+  ScrollController _scrollController = new ScrollController();
+  int initCount = 1;
+
   _SearchPage() {
     _filter.addListener(() {
       if (_filter.text.isEmpty) {
@@ -37,6 +42,7 @@ class _SearchPage extends State<SearchPage> {
           _searchText = _filter.text;
         });
       }
+      initCount= 1;
     });
   }
 
@@ -44,24 +50,51 @@ class _SearchPage extends State<SearchPage> {
   void initState() {
     isInitOnloadPage = true;
     super.initState();
-    _getData();
+    _getScrollData();
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        _getScrollData();
+      }
+    });
   }
 
   @override
   void dispose() {
     _filter.dispose();
+    _scrollController.dispose();
     super.dispose();
   }
 
   MovieRemoteDatasource get movies =>
       MovieRemoteDatasourceImpl(client: MovieWsClientImpl(http.Client()));
 
-  void _getData() async {
+  // void _getData() async {
+  //   try {
+  //     final list = await movies.getMovieResult(_searchText);
+  //     if (mounted) {
+  //       setState(() {
+  //         _movieScrollList = list;
+  //       });
+  //     }
+  //   } catch (e) {
+  //     if (mounted) {
+  //       setState(() {
+  //         _movieList = null;
+  //       });
+  //     }
+  //   }
+  // }
+
+  void _getScrollData() async {
     try {
-      final list = await movies.getMovieResult(_searchText);
+      final listScroll =
+          await movies.getMovieResultPage(_searchText, initCount.toString());
       if (mounted) {
         setState(() {
-          _movieList = list;
+          _movieScrollList = listScroll;
+          _movieList.addAll(_movieScrollList);
+          initCount++;
         });
       }
     } catch (e) {
@@ -90,7 +123,8 @@ class _SearchPage extends State<SearchPage> {
           onSubmitted: (String value) {
             isInitOnloadPage = false;
             _searchText = value;
-            _getData();
+            // _getData();
+            _getScrollData();
           },
         );
         this.appTitleBar = textField;
@@ -110,6 +144,7 @@ class _SearchPage extends State<SearchPage> {
     } else {
       return Center(
         child: ListView.builder(
+          controller: _scrollController,
           itemCount: isInitOnloadPage ? 0 : _movieList.length,
           itemBuilder: _buildItemList,
         ),

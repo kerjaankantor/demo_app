@@ -11,6 +11,7 @@ abstract class MovieRemoteDatasource {
   Future<List<Movie>> getMovie();
   Future<List<Movie>> getMovieResult(String title);
   Future<MovieDetail> getMovieDetail(String id);
+  Future<List<Movie>> getMovieResultPage(String title,String page);
 }
 
 class MovieRemoteDatasourceImpl implements MovieRemoteDatasource {
@@ -62,5 +63,20 @@ class MovieRemoteDatasourceImpl implements MovieRemoteDatasource {
     Map<String, dynamic> decodedJson = jsonDecode(json);
     detail= MovieDetail.fromNeoJson(decodedJson);
     return detail;
+  }
+
+  @override
+  Future<List<Movie>> getMovieResultPage(String title,String page) async {
+    String url = 'http://www.omdbapi.com/?apikey=68afa52b&s=$title&page=$page';
+    final response = await client.get(url);
+    String json = response.body;
+    List<Movie> movies = [];
+    Map<String, dynamic> decodedJson = jsonDecode(json);
+    List<dynamic> movieDecoded = decodedJson['Search'];
+    for (int i = 0; i < movieDecoded.length; i++) {
+      Map<String, dynamic> item = movieDecoded[i];
+      movies.add(Movie.fromNeoJson(item));
+    }
+    return movies;
   }
 }

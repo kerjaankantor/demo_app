@@ -773,7 +773,7 @@ _onDeleteLocal(MovieDetailLocal movieDetail) async{
         director: movieDetail.director,
         writer: movieDetail.writer,
         actors: movieDetail.actors,
-        plot: movieDetail.poster,
+        plot: movieDetail.plot,
         language: movieDetail.language,
         country: movieDetail.country,
         awards: movieDetail.awards,
