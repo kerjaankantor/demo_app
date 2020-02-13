@@ -67,8 +67,8 @@ class MovieDetail {
     final awards = json['Awards'] as String;
     final poster = json['Poster'] as String;
     final metascore = json['Metascore'] as String;
-    final imdbRating = json['ImdbRating'] as String;
-    final imdbVotes = json['ImdbVotes'] as String;
+    final imdbRating = json['imdbRating'] as String;
+    final imdbVotes = json['imdbVotes'] as String;
     final imdbID = json['imdbID'] as String;
     final type = json['Type'] as String;
     final dVD = json['DVD'] as String;
@@ -119,9 +119,9 @@ class MovieDetail {
         awards: json['Awards'],
         poster: json['Poster'],
         metascore: json['Metascore'],
-        imdbRating: json['ImdbRating'],
-        imdbVotes: json['ImdbVotes'],
-        imdbID: json['ImdbID'],
+        imdbRating: json['imdbRating'],
+        imdbVotes: json['imdbVotes'],
+        imdbID: json['imdbID'],
         type: json['Type'],
         dVD: json['DVD'],
         boxOffice: json['BoxOffice'],
