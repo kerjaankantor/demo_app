@@ -38,6 +38,7 @@ class _MovieDetailLocalPage extends State<MovieDetailLocalPage> {
     _dropDownMenuItems = _buildDropdownPriorityItems(_priority);
     _selectedPriority = _dropDownMenuItems[0].value;
     setState(() {
+      _selectedPriority = _dropDownMenuItems[0].value;
       this.idVal = id;
     });
     _getData();
